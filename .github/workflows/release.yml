@@ -1,0 +1,109 @@
+name: ShowKit — build e release
+
+# Cada push para main que mexa na app compila o ShowKit em Windows.
+# Se ainda não existir a release vX.Y.Z (versão do tauri.conf.json), cria-a
+# com o instalador. Para lançar uma versão nova basta subir a versão em
+# app/src-tauri/tauri.conf.json e app/src-tauri/Cargo.toml e escrever a
+# secção correspondente no CHANGELOG.md.
+#
+# Alterações só ao apps.json / icons/ não compilam nada: o launcher lê o
+# catálogo diretamente do repositório.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'CHANGELOG.md'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: app
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/src-tauri
+
+      - name: Versão
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          $v = (Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json).version
+          $cargo = (Select-String -Path src-tauri/Cargo.toml -Pattern '^version = "(.+)"' | Select-Object -First 1).Matches[0].Groups[1].Value
+          if ($v -ne $cargo) { throw "A versão do tauri.conf.json ($v) é diferente da do Cargo.toml ($cargo)" }
+          gh release view "v$v" --repo $env:GITHUB_REPOSITORY *> $null
+          $publish = if ($LASTEXITCODE -eq 0) { 'false' } else { 'true' }
+          Write-Host "Versão $v; publicar release: $publish"
+          "version=$v" >> $env:GITHUB_OUTPUT
+          "publish=$publish" >> $env:GITHUB_OUTPUT
+          exit 0
+
+      - name: Testes
+        run: cargo test --manifest-path src-tauri/Cargo.toml
+
+      - name: Dependências
+        run: npm ci
+
+      - name: Compilar instalador
+        run: npx tauri build --bundles nsis
+
+      - name: Preparar ficheiros
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          $exe = Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Select-Object -First 1
+          if (-not $exe) { throw 'Instalador NSIS não encontrado' }
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item $exe.FullName dist/ShowKit-Setup.exe
+          Copy-Item $exe.FullName "dist/ShowKit-Setup-$v.exe"
+
+          # Notas da versão: secção "## X.Y.Z" do CHANGELOG.md
+          $lines = Get-Content ../CHANGELOG.md -Encoding utf8
+          $out = @(); $inside = $false
+          foreach ($l in $lines) {
+            if ($l -match '^##\s+v?(\S+)') { $inside = ($Matches[1] -eq $v); continue }
+            if ($inside) { $out += $l }
+          }
+          $notes = ($out -join "`n").Trim()
+          if (-not $notes) { $notes = "ShowKit v$v" }
+          $notes | Out-File -Encoding utf8 dist/notes.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ShowKit-Setup-${{ steps.version.outputs.version }}
+          path: app/dist/ShowKit-Setup.exe
+
+      - name: Publicar release v${{ steps.version.outputs.version }}
+        if: steps.version.outputs.publish == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: ShowKit v${{ steps.version.outputs.version }}
+          body_path: app/dist/notes.md
+          files: |
+            app/dist/ShowKit-Setup.exe
+            app/dist/ShowKit-Setup-${{ steps.version.outputs.version }}.exe

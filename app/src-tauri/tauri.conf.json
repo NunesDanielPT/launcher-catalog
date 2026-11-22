@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ShowKit",
+  "version": "0.1.0",
+  "identifier": "pt.danielnunes.showkit",
+  "build": {
+    "frontendDist": "../ui"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "ShowKit",
+        "width": 1140,
+        "height": 780,
+        "minWidth": 760,
+        "minHeight": 520,
+        "center": true,
+        "decorations": false,
+        "backgroundColor": "#0b0c0e"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "Daniel Nunes",
+    "copyright": "© 2026 Daniel Nunes",
+    "category": "Utility",
+    "shortDescription": "ShowKit — instala e atualiza as apps de Daniel Nunes",
+    "longDescription": "Launcher das apps de Daniel Nunes: VIDEOHOST PLAYER, PLAYERSLICE, MapSim e futuras.",
+    "homepage": "https://github.com/NunesDanielPT",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": ["Portuguese", "English"],
+        "displayLanguageSelector": true,
+        "installerIcon": "icons/icon.ico"
+      }
+    }
+  }
+}

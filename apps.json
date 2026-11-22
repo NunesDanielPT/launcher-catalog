@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "author": "Daniel Nunes",
+  "launcher": {
+    "repo": "NunesDanielPT/launcher-catalog",
+    "asset": "^ShowKit-Setup\\.exe$",
+    "silentArgs": ["/S"]
+  },
+  "apps": [
+    {
+      "id": "videohost-player",
+      "name": "VIDEOHOST",
+      "nameAccent": " PLAYER",
+      "accent": "#ff8a1f",
+      "icon": "icons/videohost-player.png",
+      "repo": "NunesDanielPT/VIDEOHOST-PLAYER",
+      "category": { "pt": "Playback para espetáculos", "en": "Show playback" },
+      "tagline": {
+        "pt": "Playlist de cues que nunca deixa o ecrã cair.",
+        "en": "A cue playlist that never drops the output."
+      },
+      "description": {
+        "pt": "Motor em processo próprio com watchdog, saídas em ecrã inteiro e NDI. Antes chamava-se VTHOST.",
+        "en": "Engine in its own process with a watchdog, fullscreen and NDI outputs. Formerly VTHOST."
+      },
+      "asset": "^VIDEOHOST-PLAYER-Setup-.*\\.exe$",
+      "silentArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS"],
+      "detect": {
+        "registryKey": "{7B3C9E21-4A6D-4F0B-9C55-2E1D8A6F4B10}_is1",
+        "displayName": "VIDEOHOST PLAYER"
+      },
+      "exe": "vthost-studio.exe",
+      "uninstallArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"]
+    },
+    {
+      "id": "playerslice",
+      "name": "PLAYER",
+      "nameAccent": "SLICE",
+      "accent": "#3b6cff",
+      "icon": "icons/playerslice.png",
+      "repo": "NunesDanielPT/PlayerSlice",
+      "category": { "pt": "Ledwalls fora de formato", "en": "Odd-shaped LED walls" },
+      "tagline": {
+        "pt": "Cada vídeo no sítio certo de cada ledwall.",
+        "en": "Every video in the right spot on every LED wall."
+      },
+      "description": {
+        "pt": "Layers e colunas numa composição grande, recortada em slices para as saídas da gráfica.",
+        "en": "Layers and columns on one large composition, cut into slices for the GPU outputs."
+      },
+      "asset": "^PLAYERSLICE-Setup\\.exe$",
+      "silentArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS"],
+      "detect": {
+        "registryKey": "{6B0C4C2E-5A51-4F0B-9E0C-2C7D9A1F5E11}_is1",
+        "displayName": "PLAYERSLICE"
+      },
+      "exe": "PLAYERSLICE.exe",
+      "uninstallArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"]
+    },
+    {
+      "id": "mapsim",
+      "name": "Map",
+      "nameAccent": "Sim",
+      "accent": "#1ec8f0",
+      "icon": "icons/mapsim.png",
+      "repo": "NunesDanielPT/MAPSIM-releases",
+      "category": { "pt": "Simulação de videomapping", "en": "Projection mapping simulator" },
+      "tagline": {
+        "pt": "Projetores, lentes e distâncias reais antes de chegar ao terreno.",
+        "en": "Real projectors, lenses and throw distances before you get on site."
+      },
+      "description": {
+        "pt": "Panasonic, Epson, Barco e Christie em 3D, com exportação para WATCHOUT e PIXERA. Requer licença.",
+        "en": "Panasonic, Epson, Barco and Christie in 3D, with export to WATCHOUT and PIXERA. Licence required."
+      },
+      "asset": "^MapSim-Setup\\.exe$",
+      "silentArgs": ["/S"],
+      "detect": { "displayName": "MapSim" },
+      "exe": "MapSim.exe",
+      "uninstallArgs": ["/S"]
+    }
+  ]
+}
