@@ -113,6 +113,38 @@
       "uninstallArgs": [
         "/S"
       ]
+    },
+    {
+      "id": "renderpro",
+      "name": "Render",
+      "nameAccent": "PRO",
+      "accent": "#ff4fa3",
+      "icon": "icons/renderpro.png",
+      "repo": "NunesDanielPT/RenderPRO",
+      "category": {
+        "pt": "Conversor de codecs",
+        "en": "Codec converter"
+      },
+      "tagline": {
+        "pt": "Vídeos prontos para o PLAYERSLICE e o VIDEOHOST PLAYER num clique.",
+        "en": "Videos ready for PLAYERSLICE and VIDEOHOST PLAYER in one click."
+      },
+      "description": {
+        "pt": "Arrastas os vídeos, escolhes o player e carregas em RENDER: cada vídeo passa para o codec, tamanho e frame rate recomendados (HAP, HAP Alpha, HAP Q, H.264, H.265), com som, frame rate constante e normalização opcional.\nCada ficheiro é verificado antes de ser entregue, e o original nunca é alterado.",
+        "en": "Drop your videos, pick the player and press RENDER: each video is converted to the recommended codec, size and frame rate (HAP, HAP Alpha, HAP Q, H.264, H.265), with audio, constant frame rate and optional loudness normalisation.\nEvery file is checked before it is delivered, and the original is never touched."
+      },
+      "asset": "^RenderPRO-Setup\\.exe$",
+      "silentArgs": [
+        "/S"
+      ],
+      "detect": {
+        "registryKey": "RenderPRO",
+        "displayName": "RenderPRO"
+      },
+      "exe": "RenderPRO.exe",
+      "uninstallArgs": [
+        "/S"
+      ]
     }
   ]
 }
