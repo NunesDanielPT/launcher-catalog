@@ -1,5 +1,11 @@
 # ShowKit — novidades
 
+## 0.1.4
+
+- As versões das apps deixam de ficar bloqueadas pelo limite de pedidos do GitHub: quando a API recusa, o ShowKit vai buscar a última versão diretamente às páginas do github.com (resolve "O GitHub limitou os pedidos" e o "Sem ligação" nas apps do ArtCraft)
+- Pedidos repetidos à API do GitHub já não gastam o limite quando nada mudou
+- Doações: MB WAY em modo de teste, com número de telemóvel, pedido e confirmação simulados (nenhum valor é cobrado); os outros métodos ficam como "brevemente"
+
 ## 0.1.3
 
 - Novo separador **Doações**: explica que o projeto é open-source e precisa de apoio, com escolha de valor, frequência e forma de pagamento (temporariamente indisponível)

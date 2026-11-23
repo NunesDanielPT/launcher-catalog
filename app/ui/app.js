@@ -224,7 +224,7 @@
   function statusLine(a, st) {
     if (st.inst) {
       const badge = st.hasUpdate ? `<span class="badge state-badge update">${t('updateAvailable')}</span>` : '';
-      const d = st.rel ? `<div class="meta">${esc(t('lastUpdate', { d: fmtDate(st.rel.published_at) }))}</div>` : '';
+      const d = st.rel && st.rel.published_at ? `<div class="meta">${esc(t('lastUpdate', { d: fmtDate(st.rel.published_at) }))}</div>` : '';
       return badge + d;
     }
     if (!st.rel) {
@@ -233,7 +233,7 @@
     }
     if (!st.canInstall) return `<div class="meta">${t('noAsset')}</div>`;
     return `<span class="badge state-badge">${t('available')}</span>
-      <div class="meta">${esc(t('downloadSize', { s: fmtSize(st.rel.asset_size) }))}</div>`;
+      ${st.rel.asset_size ? `<div class="meta">${esc(t('downloadSize', { s: fmtSize(st.rel.asset_size) }))}</div>` : ''}`;
   }
 
   function iconHtml(a) {

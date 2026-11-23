@@ -11,7 +11,14 @@
   "donations": {
     "enabled": false,
     "url": "",
-    "_nota": "Quando houver sistema de pagamento: enabled=true e url com {amount}, {frequency}, {method}, {name}, {message}"
+    "mode": "test",
+    "methods": [
+      "mbway"
+    ],
+    "mbway": {
+      "endpoint": ""
+    },
+    "_nota": "mode: off | test | live. test = MB WAY simulado (nada é cobrado). live = precisa de mbway.endpoint no servidor. Outros métodos: enabled=true + url com {amount} {frequency} {method} {name} {message}."
   },
   "apps": [
     {

@@ -342,3 +342,19 @@ select:focus, input[type="search"]:focus { border-color: var(--muted); }
   .way { border-left: 0; border-top: 1px solid var(--line); }
   .way:first-child { border-top: 0; }
 }
+
+.pill small { opacity: 0.6; font-size: 11px; }
+.phone { display: flex; align-items: stretch; }
+.phone span { display: grid; place-items: center; padding: 0 10px; border: 1px solid var(--line-strong); border-right: 0; color: var(--muted); font-size: 14px; }
+.field-error { color: var(--danger); font-size: 12.5px; margin-top: 6px; }
+.test-badge { margin-left: auto; color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); padding: 2px 6px; font-size: 10.5px; }
+.mbw { text-align: center; padding: 26px 24px; }
+.mbw p { margin: 10px 0; line-height: 1.5; }
+.mbw h3 { margin: 8px 0 4px; font-size: 19px; }
+.mbw-icon { display: inline-block; font-family: var(--mono); font-weight: 700; font-size: 15px; letter-spacing: 0.18em; padding: 8px 14px; border: 1px solid var(--line-strong); color: var(--text); }
+.mbw-icon b { font-weight: 700; margin-left: 0.4em; }
+.countdown { font-family: var(--mono); font-size: 34px; letter-spacing: 0.1em; margin: 10px 0 4px; }
+.mbw-ok, .mbw-fail { width: 56px; height: 56px; margin: 0 auto; display: grid; place-items: center; border-radius: 50%; font-size: 28px; font-weight: 800; }
+.mbw-ok { background: color-mix(in srgb, var(--ok) 20%, transparent); color: var(--ok); }
+.mbw-fail { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
+.spinner { width: 28px; height: 28px; margin: 14px auto 0; border: 3px solid var(--line-strong); border-top-color: var(--text); border-radius: 50%; animation: spin 0.8s linear infinite; }

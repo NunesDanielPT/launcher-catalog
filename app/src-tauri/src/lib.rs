@@ -189,6 +189,12 @@ struct ReleaseInfo {
     asset_size: u64,
     checked_at: u64,
     stale: bool,
+    /// ETag da API do GitHub: um pedido com If-None-Match que responde 304 não gasta quota.
+    #[serde(default)]
+    etag: Option<String>,
+    /// Padrão do instalador usado nesta resposta (se o catálogo mudar, a cache deixa de servir).
+    #[serde(default)]
+    pattern: String,
 }
 
 fn parse_release(v: &Value, asset_pattern: &str) -> Result<ReleaseInfo, String> {
@@ -210,6 +216,133 @@ fn parse_release(v: &Value, asset_pattern: &str) -> Result<ReleaseInfo, String> 
         asset_size: asset.and_then(|a| a["size"].as_u64()).unwrap_or(0),
         checked_at: now(),
         stale: false,
+        etag: None,
+        pattern: asset_pattern.to_string(),
+    })
+}
+
+/// Resultado de um pedido à API com ETag.
+enum ApiAnswer {
+    Body(Value, Option<String>),
+    NotModified,
+    NotFound,
+    /// Limite de pedidos, bloqueado ou sem resposta: tentar pelas páginas do github.com.
+    Unavailable(String),
+}
+
+async fn api_release(repo: &str, etag: Option<&str>) -> ApiAnswer {
+    let client = match http() {
+        Ok(c) => c,
+        Err(e) => return ApiAnswer::Unavailable(e),
+    };
+    let mut req = client
+        .get(format!("https://api.github.com/repos/{repo}/releases/latest"))
+        .header("Accept", "application/vnd.github+json")
+        .timeout(Duration::from_secs(20));
+    if let Some(e) = etag {
+        req = req.header("If-None-Match", e);
+    }
+    let r = match req.send().await {
+        Ok(r) => r,
+        Err(e) => return ApiAnswer::Unavailable(format!("net:{e}")),
+    };
+    match r.status().as_u16() {
+        304 => ApiAnswer::NotModified,
+        404 => ApiAnswer::NotFound,
+        200 => {
+            let etag = r.headers().get("etag").and_then(|v| v.to_str().ok()).map(String::from);
+            match r.json::<Value>().await {
+                Ok(v) => ApiAnswer::Body(v, etag),
+                Err(e) => ApiAnswer::Unavailable(format!("json:{e}")),
+            }
+        }
+        403 | 429 => ApiAnswer::Unavailable("ratelimit".into()),
+        c => ApiAnswer::Unavailable(format!("http:{c}")),
+    }
+}
+
+/// Tag para onde o github.com/<repo>/releases/latest redireciona (sem gastar quota da API).
+/// Ok(None) = o repositório ainda não tem releases.
+async fn pages_latest_tag(repo: &str) -> Result<Option<String>, String> {
+    let client = reqwest::Client::builder()
+        .user_agent(format!("ShowKit/{}", env!("CARGO_PKG_VERSION")))
+        .redirect(reqwest::redirect::Policy::none())
+        .connect_timeout(Duration::from_secs(10))
+        .build()
+        .map_err(|e| format!("net:{e}"))?;
+    let r = client
+        .get(format!("https://github.com/{repo}/releases/latest"))
+        .timeout(Duration::from_secs(20))
+        .send()
+        .await
+        .map_err(|e| format!("net:{e}"))?;
+    if r.status().as_u16() == 404 {
+        return Ok(None);
+    }
+    let loc = r
+        .headers()
+        .get("location")
+        .and_then(|v| v.to_str().ok())
+        .ok_or_else(|| format!("http:{}", r.status().as_u16()))?
+        .to_string();
+    Ok(tag_from_location(&loc, repo))
+}
+
+fn tag_from_location(loc: &str, repo: &str) -> Option<String> {
+    let prefix = format!("https://github.com/{}/releases/tag/", repo).to_lowercase();
+    if loc.to_lowercase().starts_with(&prefix) {
+        let tag = &loc[prefix.len()..];
+        (!tag.is_empty()).then(|| tag.to_string())
+    } else {
+        None
+    }
+}
+
+/// Nomes dos ficheiros de uma release, lidos da página expanded_assets do github.com.
+fn asset_names_from_html(html: &str, repo: &str, tag: &str) -> Vec<String> {
+    let re = Regex::new(&format!(
+        r#"(?i)href="/{}/releases/download/{}/([^"?#]+)""#,
+        regex::escape(repo),
+        regex::escape(tag)
+    ))
+    .expect("regex");
+    let mut out: Vec<String> = re.captures_iter(html).map(|c| c[1].replace("%20", " ")).collect();
+    out.dedup();
+    out
+}
+
+async fn pages_release(repo: &str, asset_pattern: &str, cached: Option<&ReleaseInfo>) -> Result<ReleaseInfo, String> {
+    let tag = pages_latest_tag(repo).await?.ok_or("http:404")?;
+    if let Some(c) = cached.filter(|c| c.tag == tag && c.pattern == asset_pattern && c.asset_url.is_some()) {
+        let mut c = c.clone();
+        c.checked_at = now();
+        c.stale = false;
+        return Ok(c);
+    }
+    let html = http()?
+        .get(format!("https://github.com/{repo}/releases/expanded_assets/{tag}"))
+        .timeout(Duration::from_secs(20))
+        .send()
+        .await
+        .map_err(|e| format!("net:{e}"))?
+        .text()
+        .await
+        .map_err(|e| format!("net:{e}"))?;
+    let re = Regex::new(asset_pattern).map_err(|e| format!("regex:{e}"))?;
+    let name = asset_names_from_html(&html, repo, &tag).into_iter().find(|n| re.is_match(n));
+    Ok(ReleaseInfo {
+        version: tag.trim_start_matches(['v', 'V']).to_string(),
+        html_url: format!("https://github.com/{repo}/releases/tag/{tag}"),
+        asset_url: name.as_ref().map(|n| format!("https://github.com/{repo}/releases/download/{tag}/{n}")),
+        asset_name: name,
+        asset_size: 0,
+        published_at: String::new(),
+        notes: String::new(),
+        tag,
+        checked_at: now(),
+        stale: false,
+        etag: None,
+        pattern: asset_pattern.to_string(),
     })
 }
 
@@ -220,25 +353,56 @@ async fn get_release(app: AppHandle, repo: String, asset: String, force: bool) -
     let file = dir.join(format!("{}.json", safe_name(&repo)));
     let cached: Option<ReleaseInfo> = std::fs::read_to_string(&file).ok().and_then(|t| serde_json::from_str(&t).ok());
 
+    let cached = cached.filter(|c| c.pattern == asset);
     if let Some(c) = &cached {
         let age = now().saturating_sub(c.checked_at);
         if age < FORCE_MIN_SECS || (!force && age < RELEASE_CACHE_SECS) {
             return Ok(c.clone());
         }
     }
+    let save = |info: &ReleaseInfo| {
+        let _ = std::fs::write(&file, serde_json::to_string(info).unwrap_or_default());
+    };
 
-    let url = format!("https://api.github.com/repos/{repo}/releases/latest");
-    match fetch_json(&url).await.and_then(|v| parse_release(&v, &asset)) {
+    // 1) API do GitHub, com ETag (resposta 304 não conta para o limite de 60/hora).
+    let api_err = match api_release(&repo, cached.as_ref().and_then(|c| c.etag.as_deref())).await {
+        ApiAnswer::NotModified if cached.is_some() => {
+            let mut c = cached.clone().expect("cache");
+            c.checked_at = now();
+            c.stale = false;
+            save(&c);
+            return Ok(c);
+        }
+        ApiAnswer::Body(v, etag) => match parse_release(&v, &asset) {
+            Ok(mut info) => {
+                info.etag = etag;
+                save(&info);
+                return Ok(info);
+            }
+            Err(e) => e,
+        },
+        ApiAnswer::NotFound => {
+            // Sem releases publicadas (ou só pré-releases).
+            let _ = std::fs::remove_file(&file);
+            return Err("http:404".into());
+        }
+        ApiAnswer::NotModified => "http:304".into(),
+        ApiAnswer::Unavailable(e) => e,
+    };
+
+    // 2) Páginas do github.com: não gastam quota e funcionam quando a API está bloqueada.
+    match pages_release(&repo, &asset, cached.as_ref()).await {
         Ok(info) => {
-            let _ = std::fs::write(&file, serde_json::to_string(&info).unwrap_or_default());
+            save(&info);
             Ok(info)
         }
-        Err(e) => match cached {
+        Err(e) if e == "http:404" => Err(e),
+        Err(_) => match cached {
             Some(mut c) => {
                 c.stale = true;
                 Ok(c)
             }
-            None => Err(e),
+            None => Err(api_err),
         },
     }
 }
@@ -791,6 +955,21 @@ mod tests {
             exe_search: vec![],
         };
         assert_eq!(find_entry(&spec, &entries).unwrap().key, "{G}");
+    }
+
+    #[test]
+    fn pages_parsing() {
+        assert_eq!(
+            tag_from_location("https://github.com/storytold/photocraft/releases/tag/v0.7.0", "storytold/photocraft").as_deref(),
+            Some("v0.7.0")
+        );
+        assert_eq!(tag_from_location("https://github.com/storytold/photocraft/releases", "storytold/photocraft"), None);
+        assert_eq!(tag_from_location("https://login.example/portal", "storytold/photocraft"), None);
+        let html = r#"<a href="/storytold/photocraft/releases/download/v0.7.0/photocraft-0.7.0-windows-x64.msi" rel="nofollow">
+            <a href="/storytold/photocraft/releases/download/v0.7.0/SHA256SUMS.txt">
+            <a href="/storytold/photocraft/archive/refs/tags/v0.7.0.zip">"#;
+        let names = asset_names_from_html(html, "storytold/photocraft", "v0.7.0");
+        assert_eq!(names, vec!["photocraft-0.7.0-windows-x64.msi", "SHA256SUMS.txt"]);
     }
 
     #[test]
