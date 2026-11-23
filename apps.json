@@ -4,7 +4,9 @@
   "launcher": {
     "repo": "NunesDanielPT/launcher-catalog",
     "asset": "^ShowKit-Setup\\.exe$",
-    "silentArgs": ["/S"]
+    "silentArgs": [
+      "/S"
+    ]
   },
   "apps": [
     {
@@ -14,23 +16,35 @@
       "accent": "#ff8a1f",
       "icon": "icons/videohost-player.png",
       "repo": "NunesDanielPT/VIDEOHOST-PLAYER",
-      "category": { "pt": "Playback para espetáculos", "en": "Show playback" },
+      "category": {
+        "pt": "Player de vídeo para espetáculos",
+        "en": "Show video player"
+      },
       "tagline": {
-        "pt": "Playlist de cues que nunca deixa o ecrã cair.",
-        "en": "A cue playlist that never drops the output."
+        "pt": "Playlist de cues para correr vídeos num espetáculo, sem o ecrã cair.",
+        "en": "A cue playlist to run video in a show, without the output ever dropping."
       },
       "description": {
-        "pt": "Motor em processo próprio com watchdog, saídas em ecrã inteiro e NDI. Antes chamava-se VTHOST.",
-        "en": "Engine in its own process with a watchdog, fullscreen and NDI outputs. Formerly VTHOST."
+        "pt": "Prepara a sequência de vídeos com preview e forma de onda, e dispara cue a cue em ecrã inteiro ou por NDI, com countdown na rede e Show Mode. Se algo falhar, o motor reinicia sozinho no mesmo cue e posição.",
+        "en": "Build the video running order with preview and waveform, then fire cue by cue to fullscreen or NDI, with a network countdown and Show Mode. If anything fails, the engine restarts on its own at the same cue and position."
       },
       "asset": "^VIDEOHOST-PLAYER-Setup-.*\\.exe$",
-      "silentArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS"],
+      "silentArgs": [
+        "/VERYSILENT",
+        "/SUPPRESSMSGBOXES",
+        "/NORESTART",
+        "/CLOSEAPPLICATIONS"
+      ],
       "detect": {
         "registryKey": "{7B3C9E21-4A6D-4F0B-9C55-2E1D8A6F4B10}_is1",
         "displayName": "VIDEOHOST PLAYER"
       },
       "exe": "vthost-studio.exe",
-      "uninstallArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"]
+      "uninstallArgs": [
+        "/VERYSILENT",
+        "/SUPPRESSMSGBOXES",
+        "/NORESTART"
+      ]
     },
     {
       "id": "playerslice",
@@ -39,23 +53,35 @@
       "accent": "#3b6cff",
       "icon": "icons/playerslice.png",
       "repo": "NunesDanielPT/PlayerSlice",
-      "category": { "pt": "Ledwalls fora de formato", "en": "Odd-shaped LED walls" },
+      "category": {
+        "pt": "Ledwalls fora de formato",
+        "en": "Odd-shaped LED walls"
+      },
       "tagline": {
         "pt": "Cada vídeo no sítio certo de cada ledwall.",
         "en": "Every video in the right spot on every LED wall."
       },
       "description": {
-        "pt": "Layers e colunas numa composição grande, recortada em slices para as saídas da gráfica.",
-        "en": "Layers and columns on one large composition, cut into slices for the GPU outputs."
+        "pt": "Várias saídas da gráfica (monitores, projetores, processadores LED) a partir de uma composição grande, recortada em slices com posição, tamanho, rotação e perspetiva. Vídeos em qualquer formato, layers e colunas, Preview/Programa, timecode SMPTE, controlo por OSC (Companion) e codecs HAP, ProRes e DNxHR.",
+        "en": "Multiple GPU outputs (monitors, projectors, LED processors) from one large composition, cut into slices with position, size, rotation and perspective. Videos in any format, layers and columns, Preview/Program, SMPTE timecode, OSC control (Companion) and HAP, ProRes and DNxHR codecs."
       },
       "asset": "^PLAYERSLICE-Setup\\.exe$",
-      "silentArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS"],
+      "silentArgs": [
+        "/VERYSILENT",
+        "/SUPPRESSMSGBOXES",
+        "/NORESTART",
+        "/CLOSEAPPLICATIONS"
+      ],
       "detect": {
         "registryKey": "{6B0C4C2E-5A51-4F0B-9E0C-2C7D9A1F5E11}_is1",
         "displayName": "PLAYERSLICE"
       },
       "exe": "PLAYERSLICE.exe",
-      "uninstallArgs": ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"]
+      "uninstallArgs": [
+        "/VERYSILENT",
+        "/SUPPRESSMSGBOXES",
+        "/NORESTART"
+      ]
     },
     {
       "id": "mapsim",
@@ -64,7 +90,10 @@
       "accent": "#1ec8f0",
       "icon": "icons/mapsim.png",
       "repo": "NunesDanielPT/MAPSIM-releases",
-      "category": { "pt": "Simulação de videomapping", "en": "Projection mapping simulator" },
+      "category": {
+        "pt": "Simulação de videomapping",
+        "en": "Projection mapping simulator"
+      },
       "tagline": {
         "pt": "Projetores, lentes e distâncias reais antes de chegar ao terreno.",
         "en": "Real projectors, lenses and throw distances before you get on site."
@@ -74,10 +103,16 @@
         "en": "Panasonic, Epson, Barco and Christie in 3D, with export to WATCHOUT and PIXERA. Licence required."
       },
       "asset": "^MapSim-Setup\\.exe$",
-      "silentArgs": ["/S"],
-      "detect": { "displayName": "MapSim" },
+      "silentArgs": [
+        "/S"
+      ],
+      "detect": {
+        "displayName": "MapSim"
+      },
       "exe": "MapSim.exe",
-      "uninstallArgs": ["/S"]
+      "uninstallArgs": [
+        "/S"
+      ]
     }
   ]
 }
