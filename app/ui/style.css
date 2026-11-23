@@ -358,3 +358,10 @@ select:focus, input[type="search"]:focus { border-color: var(--muted); }
 .mbw-ok { background: color-mix(in srgb, var(--ok) 20%, transparent); color: var(--ok); }
 .mbw-fail { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
 .spinner { width: 28px; height: 28px; margin: 14px auto 0; border: 3px solid var(--line-strong); border-top-color: var(--text); border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+.supporters { margin-top: 18px; }
+.supporter-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.supporter { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border: 1px solid var(--line-strong); font-size: 13.5px; }
+.supporter.monthly { border-color: color-mix(in srgb, #ff4f7a 45%, transparent); }
+.supporter i { font-style: normal; color: #ff4f7a; }
+.supporter em { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); padding: 1px 4px; }

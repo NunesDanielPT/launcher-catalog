@@ -1,5 +1,9 @@
 # ShowKit — novidades
 
+## 0.1.5
+
+- Doações: lista de apoiantes (por agora com nomes de exemplo, marcados como tal)
+
 ## 0.1.4
 
 - As versões das apps deixam de ficar bloqueadas pelo limite de pedidos do GitHub: quando a API recusa, o ShowKit vai buscar a última versão diretamente às páginas do github.com (resolve "O GitHub limitou os pedidos" e o "Sem ligação" nas apps do ArtCraft)

@@ -146,8 +146,24 @@
             </div>
           </div>
         </div>
+        ${supportersHtml()}
         <p class="thanks">${esc(t('dThanks'))}</p>
       </div>`;
+  }
+
+  function supportersHtml() {
+    const c = api().catalog();
+    const list = (c && c.supporters && Array.isArray(c.supporters.list)) ? c.supporters.list.filter((x) => x && x.name) : [];
+    const allExamples = list.length > 0 && list.every((x) => x.example);
+    const chips = list.map((x) => `<span class="supporter ${x.monthly ? 'monthly' : ''}">${x.monthly ? '<i>♥</i>' : ''}${esc(x.name)}${x.example ? `<em>${esc(t('dExample'))}</em>` : ''}</span>`).join('');
+    return `<div class="panel supporters">
+      <div class="panel-head">${esc(t('dSupporters'))}</div>
+      <div class="panel-body">
+        ${list.length ? `<div class="supporter-list">${chips}</div>` : `<p class="muted" style="margin:0">${esc(t('dNoSupporters'))}</p>`}
+        ${allExamples ? `<p class="tiny">${esc(t('dExampleNote'))}</p>` : ''}
+        ${list.some((x) => x.monthly) ? `<p class="tiny"><span style="color:#ff4f7a">♥</span> ${esc(t('dMonthlyLegend'))}</p>` : ''}
+      </div>
+    </div>`;
   }
 
   function openIssue(kind) {

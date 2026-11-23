@@ -788,5 +788,35 @@
         }
       ]
     }
-  ]
+  ],
+  "supporters": {
+    "_nota": "Lista de apoiantes mostrada no separador Doações. Apagar as entradas com example=true quando houver apoiantes reais.",
+    "list": [
+      {
+        "name": "Ana M.",
+        "monthly": true,
+        "example": true
+      },
+      {
+        "name": "João S.",
+        "monthly": false,
+        "example": true
+      },
+      {
+        "name": "Rita C.",
+        "monthly": true,
+        "example": true
+      },
+      {
+        "name": "Pedro A.",
+        "monthly": false,
+        "example": true
+      },
+      {
+        "name": "Miguel F.",
+        "monthly": false,
+        "example": true
+      }
+    ]
+  }
 }

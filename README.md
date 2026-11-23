@@ -10,6 +10,20 @@ Criado por / Created by **Daniel Nunes** — [github.com/NunesDanielPT](https://
 
 ---
 
+## Apoiantes
+
+> **Exemplo** — as doações ainda não estão ativas, por isso estes nomes são apenas um exemplo de como a lista vai ficar, não apoiantes reais.
+
+| | Apoiante |
+|---|---|
+| ♥ | Ana M. *(exemplo)* |
+| ♥ | Rita C. *(exemplo)* |
+| | João S. *(exemplo)* |
+| | Pedro A. *(exemplo)* |
+| | Miguel F. *(exemplo)* |
+
+♥ = apoia todos os meses. Queres apoiar? Abre o separador **Doações** no ShowKit.
+
 ## Download
 
 [**ShowKit-Setup.exe**](https://github.com/NunesDanielPT/launcher-catalog/releases/latest/download/ShowKit-Setup.exe) (Windows 10/11, 64 bits)
