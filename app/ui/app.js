@@ -394,6 +394,7 @@
     }
     S.loading = false;
     render();
+    rerenderDonate();
 
     apps().forEach((a) => {
       if (a.icon && !S.icons[a.icon]) {
@@ -581,7 +582,7 @@
       case 'self-notes': return showNotes(t('notesTitle', { n: 'ShowKit', v: S.launcherRel.version }), S.launcherRel.notes);
       case 'set':
         settings[el.dataset.key] = el.dataset.val;
-        saveSettings(); applyTheme(); applyI18n(); render(); renderSelfBanner();
+        saveSettings(); applyTheme(); applyI18n(); render(); renderSelfBanner(); rerenderDonate();
         return showSettings();
       case 'toggle-check':
         settings.checkOnStart = !settings.checkOnStart;
@@ -644,6 +645,31 @@
   });
 
   setInterval(renderStatus, 30000);
+
+  // ------------------------------------------------------------ separadores (Aplicações / Doações)
+  let tab = 'apps';
+  function setTab(name) {
+    tab = name;
+    document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
+    $('#apps-view').classList.toggle('hidden', name !== 'apps');
+    $('#donate-view').classList.toggle('hidden', name !== 'donate');
+    if (name === 'donate' && window.ShowKitDonate) window.ShowKitDonate.render();
+    closeMenu();
+    $('main').scrollTop = 0;
+  }
+  document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
+  const rerenderDonate = () => { if (tab === 'donate' && window.ShowKitDonate) window.ShowKitDonate.render(); };
+
+  // Ponte para o donate.js
+  window.ShowKit = {
+    t,
+    lang: () => settings.lang,
+    catalog: () => S.catalog,
+    apps,
+    fullName,
+    version: () => S.info.version,
+    openUrl: (url) => call('open_url', { url }).catch((e) => toast(errMsg(e), 'error'))
+  };
 
   // ------------------------------------------------------------ arranque
   (async () => {

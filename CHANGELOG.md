@@ -1,5 +1,10 @@
 # ShowKit — novidades
 
+## 0.1.3
+
+- Novo separador **Doações**: explica que o projeto é open-source e precisa de apoio, com escolha de valor, frequência e forma de pagamento (temporariamente indisponível)
+- Botões para pedir melhorias, reportar problemas e dar opinião sobre cada aplicação
+
 ## 0.1.2
 
 - Nova secção **Softwares do ArtCraft**: as apps da ArtCraft (PhotoCraft, GridCraft, WordCraft, CADCraft, Craft Anything…) instalam-se e atualizam-se pelo ShowKit, separadas das apps de Daniel Nunes
