@@ -27,6 +27,12 @@
         'NunesDanielPT/MAPSIM-releases': ['0.54.0', '2026-11-21T17:40:25Z', 'MapSim-Setup.exe', 87662416],
         'NunesDanielPT/launcher-catalog': ['0.1.0', '2026-11-22T23:00:00Z', 'ShowKit-Setup.exe', 4e6]
       }[repo];
+      if (!data && /^(storytold|tangency-labs|UCS-Care-Group)\//.test(repo)) {
+        const id = repo.split('/')[1];
+        return { version: '0.5.0', tag: 'v0.5.0', published_at: '2026-11-12T10:00:00Z', notes: '', html_url: `https://github.com/${repo}/releases`,
+          asset_name: `${id}-0.5.0-windows-x64.msi`, asset_url: `https://github.com/${repo}/releases/download/v0.5.0/${id}-0.5.0-windows-x64.msi`,
+          asset_size: 15e6 + id.length * 3e6, checked_at: Date.now() / 1000, stale: false };
+      }
       if (!data) throw 'http:404';
       return {
         version: data[0], tag: 'v' + data[0], published_at: data[1], notes: '- Melhorias de estabilidade\n- Correções na interface',
@@ -129,7 +135,14 @@
     $('#toasts').appendChild(el);
     setTimeout(() => el.remove(), kind === 'error' ? 7000 : 4000);
   }
-  const apps = () => (S.catalog && Array.isArray(S.catalog.apps) ? S.catalog.apps : []);
+  // Apps do Daniel em "apps"; apps de outros autores dentro de cada grupo (groups[].apps).
+  function apps() {
+    if (!S.catalog) return [];
+    const own = Array.isArray(S.catalog.apps) ? S.catalog.apps : [];
+    const grouped = (Array.isArray(S.catalog.groups) ? S.catalog.groups : [])
+      .flatMap((g) => (Array.isArray(g.apps) ? g.apps.map((a) => ({ ...a, group: g.id })) : []));
+    return own.concat(grouped);
+  }
   const appById = (id) => apps().find((a) => a.id === id);
   const anyBusy = () => Object.keys(S.busy).length > 0;
   function appState(a) {
@@ -161,6 +174,9 @@
   // ------------------------------------------------------------ desenho
   function nameHtml(a) {
     return `<span class="app-name">${esc(a.name)}${a.nameAccent ? `<span class="accent">${esc(a.nameAccent)}</span>` : ''}</span>`;
+  }
+  function byLabel(a) {
+    return a.publisher ? t('byX', { p: a.publisher.toUpperCase() }) : t('by');
   }
   function fullName(a) { return `${a.name || ''}${a.nameAccent || ''}`.trim(); }
 
@@ -232,7 +248,7 @@
         <button class="gh-link" data-act="github" data-id="${esc(a.id)}">GITHUB ↗</button></div>
       <div class="card-body">
         <div class="head">${iconHtml(a)}
-          <div><div class="app-name-row">${nameHtml(a)}<span class="badge">${t('by')}</span></div>
+          <div><div class="app-name-row">${nameHtml(a)}<span class="badge">${esc(byLabel(a))}</span></div>
           <div class="category">${esc(loc(a.category))}</div></div>
         </div>
         <div class="tagline">${esc(loc(a.tagline))}</div>
@@ -289,14 +305,28 @@
       renderStatus();
       return;
     }
-    const inst = list.filter((a) => S.installed[a.id]);
-    const rest = list.filter((a) => !S.installed[a.id]);
     const block = (arr) => (settings.view === 'list'
       ? `<div class="list">${arr.map(rowHtml).join('')}</div>`
       : `<div class="grid">${arr.map(cardHtml).join('')}</div>`);
-    let html = '';
-    if (inst.length) html += `<div class="section-title">${t('installed')}</div>${block(inst)}`;
-    if (rest.length) html += `<div class="section-title">${t('notInstalled')}</div>${block(rest)}`;
+    const sections = (arr) => {
+      const inst = arr.filter((a) => S.installed[a.id]);
+      const rest = arr.filter((a) => !S.installed[a.id]);
+      let h = '';
+      if (inst.length) h += `<div class="section-title">${t('installed')}</div>${block(inst)}`;
+      if (rest.length) h += `<div class="section-title">${t('notInstalled')}</div>${block(rest)}`;
+      return h;
+    };
+    const groups = (S.catalog && Array.isArray(S.catalog.groups)) ? S.catalog.groups : [];
+    const known = new Set(groups.map((g) => g.id));
+    let html = sections(list.filter((a) => !a.group || !known.has(a.group)));
+    for (const g of groups) {
+      const arr = list.filter((a) => a.group === g.id);
+      if (!arr.length) continue;
+      html += `<div class="group-head"><div><div class="group-title">${esc(loc(g.title))}</div>
+        ${g.note ? `<div class="group-note">${esc(loc(g.note))}</div>` : ''}</div>
+        ${g.url ? `<button class="gh-link" data-act="group-url" data-url="${esc(g.url)}">${esc((g.url || '').replace(/^https:\/\//, '').toUpperCase())} ↗</button>` : ''}</div>`;
+      html += `<div class="group-body">${sections(arr)}</div>`;
+    }
     c.innerHTML = html;
     renderStatus();
   }
@@ -334,7 +364,7 @@
 
   // ------------------------------------------------------------ dados
   async function refreshInstalled() {
-    const specs = apps().map((a) => ({ id: a.id, detect: a.detect || {}, exe: a.exe || null }));
+    const specs = apps().map((a) => ({ id: a.id, detect: a.detect || {}, exe: a.exe || null, exeSearch: a.exeSearch || [] }));
     try { S.installed = await call('get_installed', { specs }); } catch (e) { toast(errMsg(e), 'error'); }
   }
 
@@ -455,6 +485,7 @@
     } else if (st.canInstall && !lock) items.push(['install', t('install').charAt(0) + t('install').slice(1).toLowerCase()]);
     if (st.rel) items.push(['notes', t('menuNotes')]);
     if (st.inst && st.inst.location) items.push(['folder', t('menuFolder')]);
+    if (a.website) items.push(['website', t('menuWebsite')]);
     items.push(['github', t('menuGithub')]);
     if (st.inst && !lock) items.push(['-'], ['uninstall', t('menuUninstall'), 'danger']);
 
@@ -541,6 +572,8 @@
       }
       case 'folder': return call('open_folder', { path: S.installed[a.id].location }).catch((e) => toast(errMsg(e), 'error'));
       case 'github': return call('open_url', { url: githubUrl(a) }).catch(() => {});
+      case 'group-url': return call('open_url', { url: el.dataset.url }).catch(() => {});
+      case 'website': return call('open_url', { url: a.website }).catch(() => {});
       case 'author': return call('open_url', { url: 'https://github.com/NunesDanielPT' }).catch(() => {});
       case 'retry': S.loading = true; render(); return load(true);
       case 'close-modal': return closeModal();

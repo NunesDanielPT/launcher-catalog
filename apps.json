@@ -146,5 +146,635 @@
         "/S"
       ]
     }
+  ],
+  "groups": [
+    {
+      "id": "artcraft",
+      "title": {
+        "pt": "SOFTWARES DO ARTCRAFT",
+        "en": "ARTCRAFT SOFTWARE"
+      },
+      "note": {
+        "pt": "Apps open-source da ArtCraft (getartcraft.com). Não são feitas por Daniel Nunes.",
+        "en": "Open-source apps by ArtCraft (getartcraft.com). Not made by Daniel Nunes."
+      },
+      "url": "https://getartcraft.com/apps",
+      "apps": [
+        {
+          "id": "artcraft-photocraft",
+          "publisher": "ArtCraft",
+          "name": "Photo",
+          "nameAccent": "Craft",
+          "accent": "#7fb0ff",
+          "icon": "icons/artcraft/photocraft.png",
+          "repo": "storytold/photocraft",
+          "category": {
+            "pt": "Edição de imagem",
+            "en": "Image editing"
+          },
+          "tagline": {
+            "pt": "O editor de imagem que já sabes usar.",
+            "en": "The image editor you already know how to use."
+          },
+          "asset": "^(photocraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "PhotoCraft",
+            "altNames": []
+          },
+          "exe": "photocraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\PhotoCraft",
+            "%ProgramFiles%\\PhotoCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\PhotoCraft",
+            "%LOCALAPPDATA%\\Programs\\PhotoCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/photocraft"
+        },
+        {
+          "id": "artcraft-vectorcraft",
+          "publisher": "ArtCraft",
+          "name": "Vector",
+          "nameAccent": "Craft",
+          "accent": "#ff8a70",
+          "icon": "icons/artcraft/vectorcraft.png",
+          "repo": "storytold/vectorcraft",
+          "category": {
+            "pt": "Ilustração vetorial",
+            "en": "Vector illustration"
+          },
+          "tagline": {
+            "pt": "Ilustração vetorial, com ferramentas familiares e efeitos editáveis.",
+            "en": "Vector illustration, with familiar tools and editable effects."
+          },
+          "asset": "^(vectorcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "VectorCraft",
+            "altNames": []
+          },
+          "exe": "vectorcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\VectorCraft",
+            "%ProgramFiles%\\VectorCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\VectorCraft",
+            "%LOCALAPPDATA%\\Programs\\VectorCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/vectorcraft"
+        },
+        {
+          "id": "artcraft-filmcraft",
+          "publisher": "ArtCraft",
+          "name": "Film",
+          "nameAccent": "Craft",
+          "accent": "#b69cff",
+          "icon": "icons/artcraft/filmcraft.png",
+          "repo": "storytold/filmcraft",
+          "category": {
+            "pt": "Edição de vídeo, cor e som",
+            "en": "Video editing, color and sound"
+          },
+          "tagline": {
+            "pt": "Edição de vídeo profissional, refeita de raiz.",
+            "en": "Professional video editing, rebuilt from scratch."
+          },
+          "asset": "^(filmcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "FilmCraft",
+            "altNames": []
+          },
+          "exe": "filmcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\FilmCraft",
+            "%ProgramFiles%\\FilmCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\FilmCraft",
+            "%LOCALAPPDATA%\\Programs\\FilmCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/filmcraft"
+        },
+        {
+          "id": "artcraft-lightcraft",
+          "publisher": "ArtCraft",
+          "name": "Light",
+          "nameAccent": "Craft",
+          "accent": "#ffc14d",
+          "icon": "icons/artcraft/lightcraft.png",
+          "repo": "storytold/lightcraft",
+          "category": {
+            "pt": "Biblioteca de fotos e revelação RAW",
+            "en": "Photo library and raw development"
+          },
+          "tagline": {
+            "pt": "As tuas fotos. Os teus píxeis. O teu computador.",
+            "en": "Your photos. Your pixels. Your machine."
+          },
+          "asset": "^(lightcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "LightCraft",
+            "altNames": []
+          },
+          "exe": "lightcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\LightCraft",
+            "%ProgramFiles%\\LightCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\LightCraft",
+            "%LOCALAPPDATA%\\Programs\\LightCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/lightcraft"
+        },
+        {
+          "id": "artcraft-pdfcraft",
+          "publisher": "ArtCraft",
+          "name": "Pdf",
+          "nameAccent": "Craft",
+          "accent": "#f23a62",
+          "icon": "icons/artcraft/pdfcraft.png",
+          "repo": "storytold/pdfcraft",
+          "category": {
+            "pt": "Ler, organizar e proteger PDFs",
+            "en": "Reading, organizing and protecting PDFs"
+          },
+          "tagline": {
+            "pt": "A bancada de trabalho open-source para PDFs.",
+            "en": "The open-source PDF workbench."
+          },
+          "asset": "^(pdfcraft|printcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "PdfCraft",
+            "altNames": [
+              "PrintCraft"
+            ]
+          },
+          "exe": "pdfcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\PdfCraft",
+            "%ProgramFiles%\\PdfCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\PdfCraft",
+            "%LOCALAPPDATA%\\Programs\\PdfCraft",
+            "%ProgramFiles%\\ArtCraft\\PrintCraft",
+            "%ProgramFiles%\\PrintCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\PrintCraft",
+            "%LOCALAPPDATA%\\Programs\\PrintCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/pdfcraft"
+        },
+        {
+          "id": "artcraft-effectcraft",
+          "publisher": "ArtCraft",
+          "name": "Effect",
+          "nameAccent": "Craft",
+          "accent": "#ff7ab8",
+          "icon": "icons/artcraft/effectcraft.png",
+          "repo": "storytold/effectcraft",
+          "category": {
+            "pt": "Motion graphics e efeitos visuais",
+            "en": "Motion graphics and visual effects"
+          },
+          "tagline": {
+            "pt": "Motion graphics e efeitos visuais.",
+            "en": "Motion graphics and visual effects."
+          },
+          "asset": "^(effectcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "EffectCraft",
+            "altNames": []
+          },
+          "exe": "effectcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\EffectCraft",
+            "%ProgramFiles%\\EffectCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\EffectCraft",
+            "%LOCALAPPDATA%\\Programs\\EffectCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/effectcraft"
+        },
+        {
+          "id": "artcraft-anicraft",
+          "publisher": "ArtCraft",
+          "name": "Ani",
+          "nameAccent": "Craft",
+          "accent": "#e8d84a",
+          "icon": "icons/artcraft/anicraft.png",
+          "repo": "storytold/anicraft",
+          "category": {
+            "pt": "Animação vetorial 2D",
+            "en": "2D vector animation"
+          },
+          "tagline": {
+            "pt": "Animação vetorial numa timeline que já conheces.",
+            "en": "Vector animation on a timeline you know."
+          },
+          "asset": "^(anicraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "AniCraft",
+            "altNames": []
+          },
+          "exe": "anicraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\AniCraft",
+            "%ProgramFiles%\\AniCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\AniCraft",
+            "%LOCALAPPDATA%\\Programs\\AniCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://github.com/storytold/anicraft"
+        },
+        {
+          "id": "artcraft-designcraft",
+          "publisher": "ArtCraft",
+          "name": "Design",
+          "nameAccent": "Craft",
+          "accent": "#a6e04a",
+          "icon": "icons/artcraft/designcraft.png",
+          "repo": "storytold/designcraft",
+          "category": {
+            "pt": "Paginação e publicação",
+            "en": "Page layout and publishing"
+          },
+          "tagline": {
+            "pt": "Paginação e publicação.",
+            "en": "Page layout and publishing."
+          },
+          "asset": "^(designcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "DesignCraft",
+            "altNames": []
+          },
+          "exe": "designcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\DesignCraft",
+            "%ProgramFiles%\\DesignCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\DesignCraft",
+            "%LOCALAPPDATA%\\Programs\\DesignCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/designcraft"
+        },
+        {
+          "id": "artcraft-figcraft",
+          "publisher": "ArtCraft",
+          "name": "Fig",
+          "nameAccent": "Craft",
+          "accent": "#4fe8b6",
+          "icon": "icons/artcraft/figcraft.png",
+          "repo": "storytold/figcraft",
+          "category": {
+            "pt": "Design de interfaces e protótipos",
+            "en": "Interface design and prototyping"
+          },
+          "tagline": {
+            "pt": "Design de interfaces e protótipos.",
+            "en": "Interface design and prototyping."
+          },
+          "asset": "^(figcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "FigCraft",
+            "altNames": []
+          },
+          "exe": "figcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\FigCraft",
+            "%ProgramFiles%\\FigCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\FigCraft",
+            "%LOCALAPPDATA%\\Programs\\FigCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/figcraft"
+        },
+        {
+          "id": "artcraft-soundcraft",
+          "publisher": "ArtCraft",
+          "name": "Sound",
+          "nameAccent": "Craft",
+          "accent": "#5fd0ee",
+          "icon": "icons/artcraft/soundcraft.png",
+          "repo": "storytold/soundcraft",
+          "category": {
+            "pt": "Gravação, edição e mistura de áudio",
+            "en": "Recording, editing and mixing audio"
+          },
+          "tagline": {
+            "pt": "Grava, edita e mistura o teu áudio.",
+            "en": "Record, edit and mix your audio."
+          },
+          "asset": "^(soundcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "SoundCraft",
+            "altNames": []
+          },
+          "exe": "soundcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\SoundCraft",
+            "%ProgramFiles%\\SoundCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\SoundCraft",
+            "%LOCALAPPDATA%\\Programs\\SoundCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/soundcraft"
+        },
+        {
+          "id": "artcraft-wordcraft",
+          "publisher": "ArtCraft",
+          "name": "Word",
+          "nameAccent": "Craft",
+          "accent": "#8ea2ff",
+          "icon": "icons/artcraft/wordcraft.png",
+          "repo": "storytold/wordcraft",
+          "category": {
+            "pt": "Escrita e design de documentos",
+            "en": "Writing and document design"
+          },
+          "tagline": {
+            "pt": "O processador de texto que conheces, nativo e offline.",
+            "en": "The familiar word processor, native and offline."
+          },
+          "asset": "^(wordcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "WordCraft",
+            "altNames": []
+          },
+          "exe": "wordcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\WordCraft",
+            "%ProgramFiles%\\WordCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\WordCraft",
+            "%LOCALAPPDATA%\\Programs\\WordCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/wordcraft"
+        },
+        {
+          "id": "artcraft-deckcraft",
+          "publisher": "ArtCraft",
+          "name": "Deck",
+          "nameAccent": "Craft",
+          "accent": "#ffa060",
+          "icon": "icons/artcraft/deckcraft.png",
+          "repo": "storytold/deckcraft",
+          "category": {
+            "pt": "Apresentações e slides",
+            "en": "Presentations and slide shows"
+          },
+          "tagline": {
+            "pt": "Cria slides, conta histórias e apresenta.",
+            "en": "Create slides, tell stories and present."
+          },
+          "asset": "^(deckcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "DeckCraft",
+            "altNames": []
+          },
+          "exe": "deckcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\DeckCraft",
+            "%ProgramFiles%\\DeckCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\DeckCraft",
+            "%LOCALAPPDATA%\\Programs\\DeckCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/deckcraft"
+        },
+        {
+          "id": "artcraft-cadcraft",
+          "publisher": "ArtCraft",
+          "name": "CAD",
+          "nameAccent": "Craft",
+          "accent": "#7cc8ff",
+          "icon": "icons/artcraft/cadcraft.png",
+          "repo": "storytold/cadcraft",
+          "category": {
+            "pt": "Desenho técnico (CAD)",
+            "en": "Computer-aided design and drafting"
+          },
+          "tagline": {
+            "pt": "Desenho técnico assistido por computador, com um fluxo familiar.",
+            "en": "Computer-aided drafting, with a familiar workflow."
+          },
+          "asset": "^(cadcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "CADCraft",
+            "altNames": []
+          },
+          "exe": "cadcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\CADCraft",
+            "%ProgramFiles%\\CADCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\CADCraft",
+            "%LOCALAPPDATA%\\Programs\\CADCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/cadcraft"
+        },
+        {
+          "id": "artcraft-gridcraft",
+          "publisher": "ArtCraft",
+          "name": "Grid",
+          "nameAccent": "Craft",
+          "accent": "#4fd68a",
+          "icon": "icons/artcraft/gridcraft.png",
+          "repo": "storytold/gridcraft",
+          "category": {
+            "pt": "Folhas de cálculo e dados",
+            "en": "Spreadsheets and data"
+          },
+          "tagline": {
+            "pt": "Folhas de cálculo que já sabes usar.",
+            "en": "Spreadsheets you already know how to use."
+          },
+          "asset": "^(gridcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "GridCraft",
+            "altNames": []
+          },
+          "exe": "gridcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\GridCraft",
+            "%ProgramFiles%\\GridCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\GridCraft",
+            "%LOCALAPPDATA%\\Programs\\GridCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/gridcraft"
+        },
+        {
+          "id": "artcraft-texturecraft",
+          "publisher": "ArtCraft",
+          "name": "Texture",
+          "nameAccent": "Craft",
+          "accent": "#e58a4e",
+          "icon": "icons/artcraft/texturecraft.png",
+          "repo": "storytold/texturecraft",
+          "category": {
+            "pt": "Pintura de texturas 3D",
+            "en": "3D texture painting"
+          },
+          "tagline": {
+            "pt": "Pinta texturas em modelos 3D.",
+            "en": "Paint textures on 3D models."
+          },
+          "asset": "^(texturecraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "TextureCraft",
+            "altNames": []
+          },
+          "exe": "texturecraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\TextureCraft",
+            "%ProgramFiles%\\TextureCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\TextureCraft",
+            "%LOCALAPPDATA%\\Programs\\TextureCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/texturecraft"
+        },
+        {
+          "id": "artcraft-materialcraft",
+          "publisher": "ArtCraft",
+          "name": "Material",
+          "nameAccent": "Craft",
+          "accent": "#63c5d3",
+          "icon": "icons/artcraft/materialcraft.png",
+          "repo": "storytold/materialcraft",
+          "category": {
+            "pt": "Materiais procedurais",
+            "en": "Procedural material design"
+          },
+          "tagline": {
+            "pt": "Cria materiais com grafos de nós.",
+            "en": "Build materials with node graphs."
+          },
+          "asset": "^(materialcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "MaterialCraft",
+            "altNames": []
+          },
+          "exe": "materialcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\MaterialCraft",
+            "%ProgramFiles%\\MaterialCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\MaterialCraft",
+            "%LOCALAPPDATA%\\Programs\\MaterialCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/materialcraft"
+        },
+        {
+          "id": "artcraft-craft-anything",
+          "publisher": "ArtCraft",
+          "name": "Craft Anything",
+          "nameAccent": "",
+          "accent": "#74aaff",
+          "icon": "icons/artcraft/craft-anything.png",
+          "repo": "storytold/craft-anything",
+          "category": {
+            "pt": "Perceber como funciona qualquer software",
+            "en": "Find out how any software works, then craft your own"
+          },
+          "tagline": {
+            "pt": "Vê como funciona qualquer site, app ou jogo, e depois cria o teu.",
+            "en": "See how any website, app or game works, then build your own."
+          },
+          "asset": "^(craft-anything)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "Craft Anything",
+            "altNames": []
+          },
+          "exe": "craft-anything.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\Craft Anything",
+            "%ProgramFiles%\\Craft Anything",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\Craft Anything",
+            "%LOCALAPPDATA%\\Programs\\Craft Anything"
+          ],
+          "uninstallArgs": [],
+          "website": "https://getartcraft.com/apps/craft-anything"
+        },
+        {
+          "id": "artcraft-solidcraft",
+          "publisher": "Tangency Labs",
+          "name": "Solid",
+          "nameAccent": "Craft",
+          "accent": "#8cc4ff",
+          "icon": "icons/artcraft/solidcraft.png",
+          "repo": "tangency-labs/solidcraft",
+          "category": {
+            "pt": "CAD 3D paramétrico",
+            "en": "Parametric 3D CAD"
+          },
+          "tagline": {
+            "pt": "CAD 3D paramétrico, com esboços e sólidos editáveis.",
+            "en": "Parametric 3D CAD, with editable sketches and solids."
+          },
+          "asset": "^(solidcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "SolidCraft",
+            "altNames": []
+          },
+          "exe": "solidcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\SolidCraft",
+            "%ProgramFiles%\\SolidCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\SolidCraft",
+            "%LOCALAPPDATA%\\Programs\\SolidCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://solidcraft.io"
+        },
+        {
+          "id": "artcraft-mailcraft",
+          "publisher": "UCS Care Group",
+          "name": "Mail",
+          "nameAccent": "Craft",
+          "accent": "#8fbfff",
+          "icon": "icons/artcraft/mailcraft.png",
+          "repo": "UCS-Care-Group/mailcraft",
+          "category": {
+            "pt": "Email, calendário e contactos",
+            "en": "Mail, calendar and contacts"
+          },
+          "tagline": {
+            "pt": "Email, calendário, contactos e tarefas, numa só app nativa.",
+            "en": "Mail, calendar, contacts and tasks, in one native app."
+          },
+          "asset": "^(mailcraft)-.*-windows-x64\\.msi$",
+          "silentArgs": [],
+          "detect": {
+            "displayName": "MailCraft",
+            "altNames": []
+          },
+          "exe": "mailcraft.exe",
+          "exeSearch": [
+            "%ProgramFiles%\\ArtCraft\\MailCraft",
+            "%ProgramFiles%\\MailCraft",
+            "%LOCALAPPDATA%\\Programs\\ArtCraft\\MailCraft",
+            "%LOCALAPPDATA%\\Programs\\MailCraft"
+          ],
+          "uninstallArgs": [],
+          "website": "https://mailcraft.work"
+        }
+      ]
+    }
   ]
 }

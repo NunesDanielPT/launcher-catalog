@@ -28,6 +28,10 @@ apps.json (este repo) ──► ShowKit lê o catálogo
 - **Deteção** — chave `Uninstall` do registo (`registryKey` = AppId do Inno Setup + `_is1`) ou, em alternativa, o início do `displayName`.
 - **Auto-update do ShowKit** — o próprio ShowKit está em `launcher` no catálogo; quando há release nova mostra um aviso e atualiza-se com um clique.
 
+## Softwares do ArtCraft
+
+O ShowKit também mostra, numa secção à parte (`groups` no `apps.json`), as apps open-source da [ArtCraft](https://getartcraft.com/apps) — PhotoCraft, GridCraft, WordCraft, CADCraft, Craft Anything e as restantes. Instalam-se a partir dos Releases de cada repo (`<app>-<versão>-windows-x64.msi`). Os dados e ícones vêm do catálogo do [ArtCraft Launcher](https://github.com/storytold/craft-launcher) (MIT / Apache-2.0); as apps são da ArtCraft e não de Daniel Nunes.
+
 ## Adicionar uma app nova ao catálogo
 
 Acrescenta uma entrada em `apps`, mete o ícone (PNG 256×256) em `icons/` e faz push:

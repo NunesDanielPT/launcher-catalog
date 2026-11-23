@@ -119,6 +119,15 @@ select:focus, input[type="search"]:focus { border-color: var(--muted); }
 }
 .section-title:first-child { margin-top: 0; }
 
+/* grupos de apps de outros autores (ex.: ArtCraft) */
+.group-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+  margin: 46px 0 0; padding: 0 0 12px; border-bottom: 2px solid var(--line-strong);
+}
+.group-title { font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: 0.2em; }
+.group-note { color: var(--muted); font-size: 13px; margin-top: 5px; }
+.group-body .section-title:first-child { margin-top: 18px; }
+
 /* grelha com linhas partilhadas, como no ArtCraft */
 .grid {
   display: grid;

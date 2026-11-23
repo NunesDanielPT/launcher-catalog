@@ -19,8 +19,12 @@ use tokio::io::AsyncWriteExt;
 
 /// Base do repositório do catálogo (apps.json + ícones).
 const REPO_RAW: &str = "https://raw.githubusercontent.com/NunesDanielPT/launcher-catalog/main/";
+/// Catálogo pela API do GitHub (sem a cache de 5 min do raw.githubusercontent.com).
+const CATALOG_API: &str = "https://api.github.com/repos/NunesDanielPT/launcher-catalog/contents/apps.json?ref=main";
 /// Quanto tempo uma resposta da API do GitHub fica em cache (limite: 60 pedidos/hora sem login).
 const RELEASE_CACHE_SECS: u64 = 600;
+/// Mesmo ao carregar em atualizar, uma resposta com menos disto é reutilizada.
+const FORCE_MIN_SECS: u64 = 300;
 /// Ícones guardados em cache durante um dia.
 const ICON_CACHE_SECS: u64 = 86_400;
 
@@ -61,9 +65,13 @@ fn safe_name(s: &str) -> String {
 }
 
 async fn fetch_json(url: &str) -> Result<Value, String> {
+    fetch_json_accept(url, "application/vnd.github+json").await
+}
+
+async fn fetch_json_accept(url: &str, accept: &str) -> Result<Value, String> {
     let r = http()?
         .get(url)
-        .header("Accept", "application/vnd.github+json")
+        .header("Accept", accept)
         .timeout(Duration::from_secs(20))
         .send()
         .await
@@ -79,7 +87,7 @@ async fn fetch_json(url: &str) -> Result<Value, String> {
 }
 
 fn is_allowed_download(url: &str) -> bool {
-    url.starts_with("https://github.com/NunesDanielPT/")
+    (url.starts_with("https://github.com/") && url.contains("/releases/download/"))
         || url.starts_with("https://objects.githubusercontent.com/")
         || url.starts_with("https://release-assets.githubusercontent.com/")
 }
@@ -103,7 +111,13 @@ async fn get_catalog(app: AppHandle) -> Result<CatalogResult, String> {
     }
 
     let cache = data_dir(&app)?.join("catalog.json");
-    match fetch_json(&format!("{REPO_RAW}apps.json")).await {
+    // Primeiro pela API do GitHub (atualizada logo após cada push); o raw.githubusercontent.com
+    // tem cache de 5 minutos e fica como alternativa se a API falhar (ex.: limite de pedidos).
+    let fresh = match fetch_json_accept(CATALOG_API, "application/vnd.github.raw+json").await {
+        Ok(v) => Ok(v),
+        Err(_) => fetch_json(&format!("{REPO_RAW}apps.json")).await,
+    };
+    match fresh {
         Ok(catalog) => {
             let _ = std::fs::write(&cache, json!({ "at": now(), "catalog": catalog }).to_string());
             Ok(CatalogResult { catalog, offline: false, fetched_at: now() })
@@ -207,7 +221,8 @@ async fn get_release(app: AppHandle, repo: String, asset: String, force: bool) -
     let cached: Option<ReleaseInfo> = std::fs::read_to_string(&file).ok().and_then(|t| serde_json::from_str(&t).ok());
 
     if let Some(c) = &cached {
-        if !force && now().saturating_sub(c.checked_at) < RELEASE_CACHE_SECS {
+        let age = now().saturating_sub(c.checked_at);
+        if age < FORCE_MIN_SECS || (!force && age < RELEASE_CACHE_SECS) {
             return Ok(c.clone());
         }
     }
@@ -236,6 +251,8 @@ struct Detect {
     registry_key: Option<String>,
     #[serde(rename = "displayName")]
     display_name: Option<String>,
+    #[serde(rename = "altNames", default)]
+    alt_names: Vec<String>,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -244,6 +261,9 @@ struct DetectSpec {
     #[serde(default)]
     detect: Detect,
     exe: Option<String>,
+    /// Pastas onde procurar o exe quando o registo não diz onde está (aceita %VARIAVEIS%).
+    #[serde(rename = "exeSearch", default)]
+    exe_search: Vec<String>,
 }
 
 /// Uma entrada de "Programas e Funcionalidades" (chave Uninstall do registo).
@@ -275,11 +295,19 @@ fn find_entry<'a>(spec: &DetectSpec, entries: &'a [UninstallEntry]) -> Option<&'
             return Some(e);
         }
     }
-    let wanted = spec.detect.display_name.as_ref()?.to_lowercase();
-    entries.iter().find(|e| {
-        let n = e.name.to_lowercase();
-        // "MapSim" apanha "MapSim 0.54.0" mas não "MapSimulator".
-        n == wanted || n.starts_with(&format!("{wanted} "))
+    let names: Vec<String> = spec
+        .detect
+        .display_name
+        .iter()
+        .chain(spec.detect.alt_names.iter())
+        .map(|n| n.to_lowercase())
+        .collect();
+    names.iter().find_map(|wanted| {
+        entries.iter().find(|e| {
+            let n = e.name.to_lowercase();
+            // "MapSim" apanha "MapSim 0.54.0" mas não "MapSimulator".
+            n == *wanted || n.starts_with(&format!("{wanted} "))
+        })
     })
 }
 
@@ -302,13 +330,36 @@ fn resolve_exe(spec: &DetectSpec, e: &UninstallEntry) -> Option<String> {
             return Some(p.to_string_lossy().into_owned());
         }
     }
-    let from_icon = e.icon.as_deref().and_then(exe_from_icon)?;
-    // Evita abrir o desinstalador por engano.
-    let lower = from_icon.to_lowercase();
-    if lower.contains("unins") || lower.contains("uninstall") {
-        return None;
+    if let Some(from_icon) = e.icon.as_deref().and_then(exe_from_icon) {
+        let lower = from_icon.to_lowercase();
+        // Evita abrir o desinstalador (ou o msiexec) por engano.
+        if !lower.contains("unins") && !lower.contains("uninstall") && !lower.contains("msiexec") && Path::new(&from_icon).exists() {
+            return Some(from_icon);
+        }
     }
-    Some(from_icon)
+    let exe = spec.exe.as_ref()?;
+    spec.exe_search
+        .iter()
+        .map(|d| Path::new(&expand_env(d)).join(exe))
+        .find(|p| p.exists())
+        .map(|p| p.to_string_lossy().into_owned())
+}
+
+/// Troca %VARIAVEL% pelo valor da variável de ambiente.
+fn expand_env(s: &str) -> String {
+    let re = Regex::new(r"%([A-Za-z0-9_()]+)%").expect("regex");
+    re.replace_all(s, |c: &regex::Captures| std::env::var(&c[1]).unwrap_or_else(|_| c[0].to_string())).into_owned()
+}
+
+fn msiexec() -> String {
+    let root = std::env::var("SystemRoot").unwrap_or_else(|_| r"C:\Windows".into());
+    format!(r"{root}\System32\msiexec.exe")
+}
+
+/// Código de produto MSI ({GUID}) dentro de "MsiExec.exe /X{...}".
+fn msi_product_code(s: &str) -> Option<String> {
+    let re = Regex::new(r"\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}").expect("regex");
+    re.find(s).map(|m| m.as_str().to_string())
 }
 
 /// Lista as entradas Uninstall (utilizador + máquina, 64 e 32 bits) via PowerShell.
@@ -403,8 +454,8 @@ async fn run_and_wait(exe: String, args: Vec<String>) -> Result<(), String> {
         .map_err(|e| e.to_string())?
         .map_err(|e| format!("ps:{e}"))?;
     match code {
-        0 => Ok(()),
-        1223 => Err("cancelled".into()),
+        0 | 3010 | 1641 => Ok(()),
+        1223 | 1602 => Err("cancelled".into()),
         c => Err(format!("exit:{c}")),
     }
 }
@@ -494,7 +545,15 @@ async fn install_app(
 ) -> Result<(), String> {
     let path = download(&app, &id, &url, &file_name, size).await?;
     emit(&app, &id, "install", 0, 0);
-    let result = run_and_wait(path.to_string_lossy().into_owned(), silent_args).await;
+    let file = path.to_string_lossy().into_owned();
+    let result = if file.to_lowercase().ends_with(".msi") {
+        // /passive mostra só a barra de progresso e pede administrador se o pacote precisar.
+        let mut args = vec!["/i".to_string(), format!("\"{file}\""), "/passive".into(), "/norestart".into()];
+        args.extend(silent_args);
+        run_and_wait(msiexec(), args).await
+    } else {
+        run_and_wait(file, silent_args).await
+    };
     let _ = std::fs::remove_file(&path);
     emit(&app, &id, "done", 0, 0);
     result
@@ -520,7 +579,11 @@ async fn uninstall_app(
         (None, None) => return Err("nouninstall".into()),
     };
     if exe.to_lowercase().contains("msiexec") {
-        return Err("nouninstall".into());
+        let code = msi_product_code(&rest).ok_or("nouninstall")?;
+        emit(&app, &id, "uninstall", 0, 0);
+        let r = run_and_wait(msiexec(), vec!["/x".into(), code, "/passive".into(), "/norestart".into()]).await;
+        emit(&app, &id, "done", 0, 0);
+        return r;
     }
     let mut all = vec![rest];
     all.extend(extra);
@@ -631,17 +694,19 @@ mod tests {
         ];
         let ps = DetectSpec {
             id: "playerslice".into(),
-            detect: Detect { registry_key: Some("{6b0c4c2e-5a51-4f0b-9e0c-2c7d9a1f5e11}_IS1".into()), display_name: None },
+            detect: Detect { registry_key: Some("{6b0c4c2e-5a51-4f0b-9e0c-2c7d9a1f5e11}_IS1".into()), display_name: None, alt_names: vec![] },
             exe: None,
+            exe_search: vec![],
         };
         assert_eq!(find_entry(&ps, &entries).unwrap().name, "PLAYERSLICE");
         let ms = DetectSpec {
             id: "mapsim".into(),
-            detect: Detect { registry_key: None, display_name: Some("MapSim".into()) },
+            detect: Detect { registry_key: None, display_name: Some("MapSim".into()), alt_names: vec![] },
             exe: None,
+            exe_search: vec![],
         };
         assert_eq!(find_entry(&ms, &entries).unwrap().key, "7a1f-guid");
-        let none = DetectSpec { id: "x".into(), detect: Detect::default(), exe: None };
+        let none = DetectSpec { id: "x".into(), detect: Detect::default(), exe: None, exe_search: vec![] };
         assert!(find_entry(&none, &entries).is_none());
     }
 
@@ -697,7 +762,35 @@ mod tests {
     fn allowed_downloads_only_from_github() {
         assert!(is_allowed_download("https://github.com/NunesDanielPT/PlayerSlice/releases/download/v1/PLAYERSLICE-Setup.exe"));
         assert!(!is_allowed_download("https://evil.example/x.exe"));
-        assert!(!is_allowed_download("https://github.com/someoneelse/x/releases/download/v1/a.exe"));
+        assert!(!is_allowed_download("https://github.com/someoneelse/x/archive/main.zip"));
+    }
+
+    #[test]
+    fn msi_helpers() {
+        assert_eq!(
+            msi_product_code("MsiExec.exe /X{1A2B3C4D-1111-2222-3333-444455556666}").as_deref(),
+            Some("{1A2B3C4D-1111-2222-3333-444455556666}")
+        );
+        assert_eq!(msi_product_code("C:\\x\\unins000.exe"), None);
+        std::env::set_var("SHOWKIT_TEST_DIR", "/tmp/sk");
+        assert_eq!(expand_env("%SHOWKIT_TEST_DIR%\\ArtCraft"), "/tmp/sk\\ArtCraft");
+        assert_eq!(expand_env("%NAO_EXISTE_XYZ%\\a"), "%NAO_EXISTE_XYZ%\\a");
+        assert!(is_allowed_download("https://github.com/storytold/photocraft/releases/download/v0.7.0/photocraft-0.7.0-windows-x64.msi"));
+        let re = Regex::new(r"^(photocraft)-.*-windows-x64\.msi$").unwrap();
+        assert!(re.is_match("photocraft-0.7.0-windows-x64.msi"));
+        assert!(!re.is_match("photocraft-0.7.0-windows-arm64.msi"));
+    }
+
+    #[test]
+    fn matches_alt_names() {
+        let entries = vec![entry("{G}", "PrintCraft")];
+        let spec = DetectSpec {
+            id: "pdfcraft".into(),
+            detect: Detect { registry_key: None, display_name: Some("PdfCraft".into()), alt_names: vec!["PrintCraft".into()] },
+            exe: None,
+            exe_search: vec![],
+        };
+        assert_eq!(find_entry(&spec, &entries).unwrap().key, "{G}");
     }
 
     #[test]
