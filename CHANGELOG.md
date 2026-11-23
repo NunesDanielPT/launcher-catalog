@@ -1,5 +1,10 @@
 # ShowKit — novidades
 
+## 0.1.6
+
+- Corrigido: depois de uma atualização o botão ficava em "A instalar…" até se fechar o ShowKit (o instalador reabre a app e o ShowKit esperava por ela)
+- Já dá para instalar várias apps ao mesmo tempo: os downloads correm em paralelo e as instalações seguem uma fila ("Na fila…")
+
 ## 0.1.5
 
 - Doações: lista de apoiantes (por agora com nomes de exemplo, marcados como tal)

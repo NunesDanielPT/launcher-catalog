@@ -200,14 +200,15 @@
       } else {
         label = t('downloading', { p: fmtSize(b.received) });
       }
-    } else if (b.phase === 'install') label = t('installing');
+    } else if (b.phase === 'queued') label = t('queued');
+    else if (b.phase === 'install') label = t('installing');
     else if (b.phase === 'uninstall') label = t('uninstalling');
     const bar = width === null ? '<i class="bar indet"></i>' : `<i class="bar" style="width:${width}%"></i>`;
     return `<button class="btn main busy" disabled>${bar}<span>${esc(label)}</span></button>`;
   }
 
   function actionsHtml(a, st) {
-    const lock = anyBusy();
+    const lock = false; // várias instalações ao mesmo tempo: o backend põe-nas em fila
     const more = `<button class="btn more" data-act="menu" data-id="${esc(a.id)}" title="…">…</button>`;
     if (st.busy) return busyButton(st.busy) + more;
     if (st.inst) {
@@ -415,7 +416,7 @@
   // ------------------------------------------------------------ ações
   async function doInstall(a, kind) {
     const st = appState(a);
-    if (!st.rel || !st.rel.asset_url || anyBusy()) return;
+    if (!st.rel || !st.rel.asset_url || S.busy[a.id]) return;
     S.busy[a.id] = { phase: 'download', received: 0, total: st.rel.asset_size || 0 };
     render();
     try {
@@ -434,7 +435,7 @@
 
   async function doUninstall(a) {
     const inst = S.installed[a.id];
-    if (!inst || anyBusy()) return;
+    if (!inst || S.busy[a.id]) return;
     S.busy[a.id] = { phase: 'uninstall', received: 0, total: 0 };
     render();
     try {
@@ -478,7 +479,7 @@
   function openMenu(btn, a) {
     const st = appState(a);
     const items = [];
-    const lock = anyBusy();
+    const lock = !!st.busy;
     if (st.inst) {
       items.push(['open', t('menuOpen')]);
       if (st.hasUpdate && !lock) items.push(['update', t('menuUpdate')]);

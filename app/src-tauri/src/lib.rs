@@ -600,12 +600,15 @@ fn ps_command(script: &str) -> Command {
 }
 
 /// Script que corre um programa (com UAC se o instalador o pedir), espera e devolve o código de saída.
+/// Usa WaitForExit() e não "Start-Process -Wait": o -Wait espera também pelos processos filhos, e os
+/// instaladores do PLAYERSLICE/VIDEOHOST reabrem a app no fim de uma atualização silenciosa — o
+/// ShowKit ficava em "A instalar…" até a app ser fechada.
 /// 1223 = o utilizador recusou o pedido de administrador.
 fn start_process_script(exe: &str, args: &[String]) -> String {
     let args: Vec<String> = args.iter().filter(|a| !a.trim().is_empty()).map(|a| ps_quote(a)).collect();
     let arglist = if args.is_empty() { String::new() } else { format!(" -ArgumentList {}", args.join(",")) };
     format!(
-        "$ErrorActionPreference='Stop'; try {{ $p = Start-Process -FilePath {}{} -Wait -PassThru; exit $p.ExitCode }} catch {{ [Console]::Error.WriteLine($_.Exception.Message); exit 1223 }}",
+        "$ErrorActionPreference='Stop'; try {{ $p = Start-Process -FilePath {}{} -PassThru; $null = $p.Handle; $p.WaitForExit(); exit $p.ExitCode }} catch {{ [Console]::Error.WriteLine($_.Exception.Message); exit 1223 }}",
         ps_quote(exe),
         arglist
     )
@@ -698,6 +701,20 @@ async fn download(app: &AppHandle, id: &str, url: &str, file_name: &str, expecte
 
 // ---------------------------------------------------------------- ações
 
+/// Só um instalador corre de cada vez (o Windows Installer e o Inno Setup não gostam de dois em
+/// simultâneo). Os downloads podem ir em paralelo; quem chega fica "na fila" até ser a sua vez.
+static INSTALL_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
+async fn install_turn(app: &AppHandle, id: &str) -> tokio::sync::MutexGuard<'static, ()> {
+    match INSTALL_LOCK.try_lock() {
+        Ok(g) => g,
+        Err(_) => {
+            emit(app, id, "queued", 0, 0);
+            INSTALL_LOCK.lock().await
+        }
+    }
+}
+
 #[tauri::command]
 async fn install_app(
     app: AppHandle,
@@ -708,6 +725,7 @@ async fn install_app(
     silent_args: Vec<String>,
 ) -> Result<(), String> {
     let path = download(&app, &id, &url, &file_name, size).await?;
+    let _turn = install_turn(&app, &id).await;
     emit(&app, &id, "install", 0, 0);
     let file = path.to_string_lossy().into_owned();
     let result = if file.to_lowercase().ends_with(".msi") {
@@ -742,6 +760,7 @@ async fn uninstall_app(
         }
         (None, None) => return Err("nouninstall".into()),
     };
+    let _turn = install_turn(&app, &id).await;
     if exe.to_lowercase().contains("msiexec") {
         let code = msi_product_code(&rest).ok_or("nouninstall")?;
         emit(&app, &id, "uninstall", 0, 0);
@@ -797,7 +816,7 @@ async fn self_update(app: AppHandle, url: String, file_name: String, size: u64, 
     let args: Vec<String> = silent_args.iter().map(|a| ps_quote(a)).collect();
     let arglist = if args.is_empty() { String::new() } else { format!(" -ArgumentList {}", args.join(",")) };
     let script = format!(
-        "Start-Sleep -Seconds 2; $p = Start-Process -FilePath {}{} -Wait -PassThru; Remove-Item -LiteralPath {} -ErrorAction SilentlyContinue; Start-Process -FilePath {}",
+        "Start-Sleep -Seconds 2; $p = Start-Process -FilePath {}{} -PassThru; $p.WaitForExit(); Remove-Item -LiteralPath {} -ErrorAction SilentlyContinue; Start-Process -FilePath {}",
         ps_quote(&path.to_string_lossy()),
         arglist,
         ps_quote(&path.to_string_lossy()),
@@ -901,7 +920,8 @@ mod tests {
     fn quotes_for_powershell() {
         assert_eq!(ps_quote("C:\\Dan's\\a.exe"), "'C:\\Dan''s\\a.exe'");
         let s = start_process_script("C:\\x.exe", &["/S".into(), "".into()]);
-        assert!(s.contains("-FilePath 'C:\\x.exe' -ArgumentList '/S' -Wait"));
+        assert!(s.contains("-FilePath 'C:\\x.exe' -ArgumentList '/S' -PassThru"));
+        assert!(s.contains("WaitForExit()") && !s.contains("-Wait "));
     }
 
     #[test]
