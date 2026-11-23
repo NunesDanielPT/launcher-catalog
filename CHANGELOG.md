@@ -1,5 +1,9 @@
 # ShowKit — novidades
 
+## 0.1.1
+
+- As descrições das apps podem ter várias linhas (ex.: Projeção e LED wall no MapSim)
+
 ## 0.1.0
 
 - Primeira versão do ShowKit / First ShowKit release

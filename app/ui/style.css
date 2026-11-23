@@ -155,7 +155,7 @@ select:focus, input[type="search"]:focus { border-color: var(--muted); }
 }
 .category { color: var(--muted); margin-top: 4px; font-size: 13.5px; }
 .tagline { margin-top: 20px; color: var(--text); line-height: 1.45; }
-.desc { margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.desc { white-space: pre-line; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .meta { margin-top: 12px; color: var(--dim); font-size: 13px; }
 .state-badge { margin-top: 16px; align-self: flex-start; }
 .state-badge.update { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }

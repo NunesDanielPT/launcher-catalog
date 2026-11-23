@@ -91,16 +91,16 @@
       "icon": "icons/mapsim.png",
       "repo": "NunesDanielPT/MAPSIM-releases",
       "category": {
-        "pt": "Simulação de videomapping",
-        "en": "Projection mapping simulator"
+        "pt": "Simulação de projeção e LED walls",
+        "en": "Projection and LED wall simulator"
       },
       "tagline": {
-        "pt": "Projetores, lentes e distâncias reais antes de chegar ao terreno.",
-        "en": "Real projectors, lenses and throw distances before you get on site."
+        "pt": "Projeção e LED walls planeados ao pormenor antes de chegar ao terreno.",
+        "en": "Projection and LED walls planned in detail before you get on site."
       },
       "description": {
-        "pt": "Panasonic, Epson, Barco e Christie em 3D, com exportação para WATCHOUT e PIXERA. Requer licença.",
-        "en": "Panasonic, Epson, Barco and Christie in 3D, with export to WATCHOUT and PIXERA. Licence required."
+        "pt": "PROJEÇÃO — projetores e lentes reais (Panasonic, Epson, Barco, Christie, Sony) em ecrãs, cúpulas, salas imersivas e fachadas: distâncias, lens shift, lux, densidade, blending e arrays em truss, com o conteúdo simulado na superfície e exportação para WATCHOUT, PIXERA e Resolume.\nLED WALL — ecrãs com cabinets reais (pitch, resolução, peso e consumo), LED curvo, estrutura e ground stacks, cablagem de dados e energia automática por processador com backup, e documentação técnica em PDF. Requer licença.",
+        "en": "PROJECTION — real projectors and lenses (Panasonic, Epson, Barco, Christie, Sony) on screens, domes, immersive rooms and façades: throw distances, lens shift, lux, density, blending and truss arrays, with content simulated on the surface and export to WATCHOUT, PIXERA and Resolume.\nLED WALL — screens built from real cabinets (pitch, resolution, weight and power), curved LED, structure and ground stacks, automatic data and power cabling per processor with backup, and technical PDF documentation. Licence required."
       },
       "asset": "^MapSim-Setup\\.exe$",
       "silentArgs": [
